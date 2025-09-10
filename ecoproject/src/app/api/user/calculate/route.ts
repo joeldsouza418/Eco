@@ -8,11 +8,11 @@ export async function POST(req: Request) {
         const number = body.number; // expecting { "number": 42 }
 
         return new Promise((resolve, reject) => {
-            const py = spawn("python", ["process.py", number.toString()]);
+            const py = spawn("python", ["src/app/api/user/calculate/process.py", number.toString()]);
 
             let result = "";
             py.stdout.on("data", (data) => {
-                result += data.toString();
+                return result += data.toString();
             });
 
             py.stderr.on("data", (data) => {
