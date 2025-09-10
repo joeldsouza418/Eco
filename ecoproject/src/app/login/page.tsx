@@ -1,109 +1,71 @@
-"use client"
+'use client'
+import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
-import type React from "react"
-
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Leaf, Eye, EyeOff } from "lucide-react"
-import axios from "axios"
-import { useRouter } from "next/navigation"
-
-export default function LoginPage() {
+export default function Login() {
+    const [user, setUser] = React.useState({
+        email: '',
+        password: '',
+    });
     const router = useRouter();
-    const [showPassword, setShowPassword] = useState(false)
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-    })
-
-    const handleSubmit = async () => {
-
-        // TODO: Implement login logic
+    const onLogin = async () => {
         try {
-            await axios.post('/api/user/login', formData);
-            router.push('/dashboard');
-        } catch (error: any) {
-            console.log('error logging in', error.message)
+            const response = await axios.post('/api/user/login', user);
+            console.log(response.data);
+            router.push(`/user`);
+        } catch (error) {
+            console.error(error);
         }
-
-        console.log("Login attempt:", formData)
-    }
+    };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                        <Leaf className="h-8 w-8 text-primary" />
-                        <h1 className="text-2xl font-bold text-foreground">EcoTracker</h1>
-                    </div>
-                    <CardTitle className="text-2xl">Welcome Back</CardTitle>
-                    <CardDescription>Sign in to continue your eco journey</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Enter your email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
-                            />
-                        </div>
+        <div className="flex flex-col items-center justify-center min-h-[80vh]">
+            <h1 className="text-white text-3xl font-bold mb-8">Login</h1>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="Enter your password"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    required
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                    ) : (
-                                        <Eye className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
+            <form
+                className="flex flex-col gap-4 p-8 border border-gray-300 rounded-2xl bg-gray-50 min-w-[300px] shadow-md"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    onLogin();
+                }}
+            >
+                <label className="flex flex-col font-semibold text-black">
+                    Email:
+                    <input
+                        type="email"
+                        name="email"
+                        required
+                        value={user.email}
+                        onChange={(e) => setUser({ ...user, email: e.target.value })}
+                        className="mt-2 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </label>
 
-                        <div className="flex items-center justify-between">
-                            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                                Forgot password?
-                            </Link>
-                        </div>
+                <label className="flex flex-col font-semibold text-black">
+                    Password:
+                    <input
+                        type="password"
+                        name="password"
+                        required
+                        value={user.password}
+                        onChange={(e) => setUser({ ...user, password: e.target.value })}
+                        className="mt-2 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </label>
 
-                        <Button type="submit" className="w-full">
-                            Sign In
-                        </Button>
-                    </form>
+                <button
+                    type="submit"
+                    className="mt-4 py-3 rounded-md bg-blue-600 text-white font-bold hover:bg-blue-700 transition duration-200"
+                >
+                    Login
+                </button>
+            </form>
 
-                    <div className="mt-6 text-center text-sm">
-                        <span className="text-muted-foreground">Don't have an account? </span>
-                        <Link href="/signup" className="text-primary hover:underline">
-                            Sign up
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
+            <Link href="/signup" className="mt-4 text-blue-500 hover:underline">
+                Don’t have an account? Sign Up
+            </Link>
         </div>
-    )
+    );
 }
